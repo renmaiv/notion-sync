@@ -1,6 +1,13 @@
 # notion-sync
 
-A library of Astro components and a Notion sync script for running a blog powered by Notion as a CMS. Pull your articles from Notion, generate a local JSON file, and render them with drop-in Astro components — no external build service, no API calls at runtime, no MCP or tokens use.
+A library of Astro components and a Notion sync script for running a blog powered by Notion as a CMS. Pull your articles from Notion — no external build service, no API calls at runtime, no MCP or tokens use. You run single npm command every time you updated Notion or set up Gitgub automation.
+
+
+## Ways to use
+
+1. You have an existing blog. Run AGENTS.md inside your site repo just once. Simply follow it and check results of each step. 
+2. No blog -- you can either run AGENTS.md or generate a local JSON file, and render them with drop-in Astro components -- please see below how..
+
 
 ## How it works
 
@@ -13,7 +20,7 @@ Notion database ──► sync/notion-sync.js ──► src/data/articles.json
                                      ArticleCard, NextArticle, ...)
 ```
 
-The sync script is a one-time Node script you run locally (or in CI) whenever you publish new content. It writes a JSON file that Astro imports statically at build time — so the site itself makes zero Notion API calls.
+The sync script is a one-time Node script you run locally (or in CI) whenever you publish new content. It writes a JSON file that Astro (but it's agnostic to any build) imports statically at build time — so the site itself makes zero Notion API calls.
 
 ---
 
