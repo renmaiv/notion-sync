@@ -1,0 +1,60 @@
+---
+/**
+ * ArticleBlock.astro
+ *
+ * Renders a single block from a timeline article's `body[]` array.
+ * All supported block kinds:
+ *
+ *   { kind: 'h2',    text: string }
+ *   { kind: 'h3',    text: string }
+ *   { kind: 'p',     text?: string, runs?: Run[] }
+ *   { kind: 'quote', text: string, cite?: string }
+ *   { kind: 'figure', src: string, alt?: string, caption?: string }
+ *   { kind: 'ul',    items: (string | Run[])[] }
+ *
+ * h2 and h3 receive `data-section` so the TOC script can discover them.
+ * Paragraphs and list items accept either a plain `text` string or a `runs[]`
+ * array for inline formatting (bold, italic, code, links).
+ *
+ * Usage:
+ *   import ArticleBlock from 'notion2astro/components/ArticleBlock.astro';
+ *   {body.map((block) => <ArticleBlock block={block} />)}
+ */
+import RichText from './RichText.astro';
+const { block } = Astro.props;
+---
+{block.kind === 'h2' && (
+  <h2 data-section>{block.text}</h2>
+)}
+
+{block.kind === 'h3' && (
+  <h3 data-section>{block.text}</h3>
+)}
+
+{block.kind === 'p' && (
+  <p>{block.runs ? <RichText runs={block.runs} /> : block.text}</p>
+)}
+
+{block.kind === 'quote' && (
+  <blockquote class="n2a-quote">
+    <p>{block.text}</p>
+    {block.cite && <cite>{block.cite}</cite>}
+  </blockquote>
+)}
+
+{block.kind === 'figure' && (
+  <figure class="n2a-figure">
+    <div class="n2a-figure-media">
+      <img src={block.src} alt={block.alt ?? ''} loading="lazy" />
+    </div>
+    {block.caption && <figcaption>{block.caption}</figcaption>}
+  </figure>
+)}
+
+{block.kind === 'ul' && (
+  <ul>
+    {block.items.map((item: any) => (
+      <li>{Array.isArray(item) ? <RichText runs={item} /> : item}</li>
+    ))}
+  </ul>
+)}

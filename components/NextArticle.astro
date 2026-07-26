@@ -1,0 +1,47 @@
+---
+/**
+ * NextArticle.astro
+ *
+ * Renders the "next article" card shown at the bottom of each article.
+ * Renders nothing when `next` is null/undefined.
+ *
+ * Props:
+ *   next      - article.next: { slug, title, subtitle?, media, datePublished? }
+ *   basePath  - URL prefix for the link, e.g. "/blog" (default "/blog")
+ *
+ * The sync script populates `next` with the chronologically next article,
+ * wrapping around from newest back to oldest. You can override it per-article
+ * in Notion via a "Next Override" relation property.
+ *
+ * Usage:
+ *   import NextArticle from 'notion2astro/components/NextArticle.astro';
+ *   <NextArticle next={article.next} basePath="/blog" />
+ */
+import { isVideo, formatDate } from '../lib/helpers.mjs';
+
+interface Props {
+  next?: any;
+  basePath?: string;
+}
+
+const { next, basePath = '/blog' } = Astro.props;
+---
+{next && (
+  <div class="n2a-next">
+    <p class="n2a-next-label">Next</p>
+    <a href={`${basePath}/${next.slug}/`} class="n2a-next-card">
+      <div class="n2a-next-media">
+        {isVideo(next.media) ? (
+          <div class="n2a-video-placeholder" data-src={next.media} data-fit="cover"></div>
+        ) : (
+          <img src={next.media} alt="" loading="lazy" />
+        )}
+      </div>
+      <div class="n2a-next-text">
+        <p class="n2a-next-title">{next.title}</p>
+        {next.subtitle && <p class="n2a-next-subtitle">{next.subtitle}</p>}
+        {next.datePublished && <p class="n2a-next-date">{formatDate(next.datePublished)}</p>}
+      </div>
+    </a>
+  </div>
+)}

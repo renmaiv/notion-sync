@@ -1,0 +1,152 @@
+---
+/**
+ * TimelineArticle.astro
+ *
+ * Renders a "timeline" article — a two-column layout with a sticky table of
+ * contents on the left and the article body on the right.
+ *
+ * The TOC is built client-side from every [data-section] heading in the body
+ * (h2 and h3), and the active section is tracked as you scroll.
+ * See the <script> block below.
+ *
+ * Props:
+ *   article   - a full article object (type: "timeline")
+ *   basePath  - URL prefix for the next-article link (default "/blog")
+ *
+ * Slots:
+ *   header    - replaces the default <header> block (title + meta)
+ *   footer    - injected after the article body, before the next-article card
+ *
+ * Body block shape (article.body[]):
+ *   See ArticleBlock.astro for the full list of supported kinds.
+ *
+ * Usage:
+ *   import TimelineArticle from 'notion2astro/components/TimelineArticle.astro';
+ *   <TimelineArticle article={article} basePath="/blog" />
+ */
+import { formatDate, readLabel } from '../lib/helpers.mjs';
+import ArticleBlock from './ArticleBlock.astro';
+import NextArticle from './NextArticle.astro';
+
+interface Props {
+  article: any;
+  basePath?: string;
+}
+
+const { article, basePath = '/blog' } = Astro.props;
+const { title, datePublished, readMinutes, summary = '', body = [], next } = article;
+
+const dropcap = summary.slice(0, 1);
+const summaryRest = summary.slice(1).replace(/^\s/, '');
+---
+<div class="n2a-timeline">
+  <header class="n2a-article-header">
+    <slot name="header">
+      <h1 class="n2a-article-title">{title}</h1>
+      <div class="n2a-article-meta">
+        {datePublished && <span class="n2a-article-date">{formatDate(datePublished)}</span>}
+        {datePublished && readMinutes && <span class="n2a-meta-dot" aria-hidden="true">·</span>}
+        {readMinutes && <span class="n2a-article-read">{readLabel(readMinutes)}</span>}
+      </div>
+    </slot>
+  </header>
+
+  <div class="n2a-timeline-row">
+
+    <!-- Table of contents — populated by the script below -->
+    <aside class="n2a-toc-col" aria-label="On this page">
+      <nav class="n2a-toc">
+        <ul class="n2a-toc-list" data-toc aria-label="Table of contents"></ul>
+      </nav>
+    </aside>
+
+    <!-- Article body -->
+    <div class="n2a-article-col">
+      {summary && (
+        <p class="n2a-article-summary">
+          <span class="n2a-dropcap" aria-hidden="true">{dropcap}</span>
+          {summaryRest}
+        </p>
+      )}
+
+      <article class="n2a-article-body" data-article>
+        {body.map((block: any) => <ArticleBlock block={block} />)}
+      </article>
+    </div>
+  </div>
+
+  <slot name="footer" />
+
+  <NextArticle next={next} basePath={basePath} />
+</div>
+
+<script>
+  /**
+   * Builds the table of contents from [data-section] headings found inside
+   * [data-article], then highlights the active section as the reader scrolls.
+   *
+   * The TOC is scoped to [data-toc] so multiple articles on one page don't
+   * collide. h2s are top-level <li>s; h3s are nested inside the preceding h2.
+   */
+  (function initToc() {
+    const toc = document.querySelector<HTMLElement>('[data-toc]');
+    const article = document.querySelector<HTMLElement>('[data-article]');
+    if (!toc || !article) return;
+
+    const headings = Array.from(
+      article.querySelectorAll<HTMLHeadingElement>('h2[data-section], h3[data-section]')
+    );
+    if (!headings.length) return;
+
+    // Give every heading a stable id if it doesn't already have one.
+    headings.forEach((h, i) => {
+      if (!h.id) {
+        h.id = `section-${i}-${h.tagName.toLowerCase()}`;
+      }
+    });
+
+    // Build list items, nesting h3s inside their preceding h2.
+    let currentH2Li: HTMLLIElement | null = null;
+    let nestedUl: HTMLUListElement | null = null;
+
+    headings.forEach((h) => {
+      const a = document.createElement('a');
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent ?? '';
+
+      const li = document.createElement('li');
+      li.dataset.tocTarget = h.id;
+      li.appendChild(a);
+
+      if (h.tagName === 'H2') {
+        toc.appendChild(li);
+        currentH2Li = li;
+        nestedUl = null;
+      } else {
+        if (!nestedUl) {
+          nestedUl = document.createElement('ul');
+          (currentH2Li ?? toc).appendChild(nestedUl);
+        }
+        nestedUl.appendChild(li);
+      }
+    });
+
+    // Track the active heading with IntersectionObserver.
+    const tocItems = Array.from(toc.querySelectorAll<HTMLLIElement>('li[data-toc-target]'));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            tocItems.forEach((li) => li.classList.remove('n2a-toc-active'));
+            const active = tocItems.find((li) => li.dataset.tocTarget === entry.target.id);
+            active?.classList.add('n2a-toc-active');
+          }
+        });
+      },
+      { rootMargin: '0px 0px -70% 0px', threshold: 0 }
+    );
+
+    headings.forEach((h) => observer.observe(h));
+  })();
+</script>
