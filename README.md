@@ -1,6 +1,6 @@
 # notion-sync
 
-A library of Astro components and a Notion sync script for running a blog powered by Notion as a CMS. Pull your articles from Notion, generate a local JSON file, and render them with drop-in Astro components — no external build service, no API calls at runtime.
+A library of Astro components and a Notion sync script for running a blog powered by Notion as a CMS. Pull your articles from Notion, generate a local JSON file, and render them with drop-in Astro components — no external build service, no API calls at runtime, no MCP or tokens use.
 
 ## How it works
 
@@ -40,9 +40,8 @@ npm install @notionhq/client dotenv
 
 ### 3. Configure Notion
 
-1. Create a Notion integration at <https://www.notion.so/my-integrations> and copy the secret (`ntn_...`).
-2. Open your Articles database in Notion → `···` → Connections → add your integration.
-3. Copy the database ID from the URL: `notion.so/<workspace>/<DATABASE_ID>?v=...`
+1. Create a Notion integration (Personal Access Token, free) at <https://www.notion.so/my-integrations> and copy the secret (`ntn_...`).
+2. Copy the database ID from the URL: `notion.so/<workspace>/<DATABASE_ID>?v=...` or just share the link to the page with LLM.
 
 Add to `.env`:
 
@@ -93,13 +92,7 @@ Alternate Image blocks and Synced Blocks. Each Synced Block should contain:
 
 ### 6. Run the sync script
 
-```bash
-node src/notion-sync/sync/notion-sync.js
-```
-
-This writes `src/data/articles.json` and downloads article images to `public/blog/`.
-
-Wire it into `package.json`:
+Add these scripts to your project's `package.json`:
 
 ```json
 "scripts": {
@@ -107,6 +100,15 @@ Wire it into `package.json`:
   "build": "npm run sync && astro build"
 }
 ```
+
+Then build with npm:
+
+```bash
+npm run sync    # pull from Notion and write articles.json + images
+npm run build   # sync then build the Astro site
+```
+
+This writes `src/data/articles.json` and downloads article images to `public/blog/`.
 
 ### 7. Create your Astro pages
 
@@ -319,7 +321,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm ci
-      - run: node src/notion-sync/sync/notion-sync.js
+      - run: npm run sync
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_ARTICLES_DB_ID: ${{ secrets.NOTION_ARTICLES_DB_ID }}
