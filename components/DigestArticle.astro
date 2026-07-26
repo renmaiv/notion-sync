@@ -1,0 +1,69 @@
+---
+/**
+ * DigestArticle.astro
+ *
+ * Renders a "digest" article — a grid of media+text pairs pulled from Notion.
+ * Each body item is a { media, title, desc } object; they are rendered two-up
+ * in a responsive grid.
+ *
+ * Props:
+ *   article   - a full article object (type: "digest")
+ *   basePath  - URL prefix for the next-article link (default "/blog")
+ *
+ * Slots:
+ *   header    - replaces the default <header> block (title + meta)
+ *   footer    - injected after the digest grid, before the next-article card
+ *
+ * Body item shape (article.body[]):
+ *   { media: string, title: string, desc: string }
+ *   media — image path or .mp4 URL (rendered as lazy-loaded video placeholder)
+ *
+ * Usage:
+ *   import DigestArticle from 'notion2astro/components/DigestArticle.astro';
+ *   <DigestArticle article={article} basePath="/blog" />
+ */
+import { formatDate, readLabel, isVideo } from '../lib/helpers.mjs';
+import NextArticle from './NextArticle.astro';
+
+interface Props {
+  article: any;
+  basePath?: string;
+}
+
+const { article, basePath = '/blog' } = Astro.props;
+const { title, datePublished, readMinutes, body = [], next } = article;
+---
+<div class="n2a-digest">
+  <header class="n2a-article-header">
+    <slot name="header">
+      <h1 class="n2a-article-title">{title}</h1>
+      <div class="n2a-article-meta">
+        {datePublished && <span class="n2a-article-date">{formatDate(datePublished)}</span>}
+        {datePublished && readMinutes && <span class="n2a-meta-dot" aria-hidden="true">·</span>}
+        {readMinutes && <span class="n2a-article-read">{readLabel(readMinutes)}</span>}
+      </div>
+    </slot>
+  </header>
+
+  <div class="n2a-digest-grid">
+    {body.map((item: any) => (
+      <article class="n2a-digest-item">
+        <div class="n2a-digest-media">
+          {isVideo(item.media) ? (
+            <div class="n2a-video-placeholder" data-src={item.media} data-fit="cover"></div>
+          ) : (
+            <img src={item.media} alt="" loading="lazy" />
+          )}
+        </div>
+        <div class="n2a-digest-text">
+          {item.title && <p class="n2a-digest-item-title">{item.title}</p>}
+          {item.desc && <p class="n2a-digest-item-desc">{item.desc}</p>}
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <slot name="footer" />
+
+  <NextArticle next={next} basePath={basePath} />
+</div>

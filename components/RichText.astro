@@ -1,0 +1,37 @@
+---
+/**
+ * RichText.astro
+ *
+ * Renders an inline "runs" array without using `set:html`, keeping output safe.
+ * A runs array is produced by the notion sync script from Notion's rich_text[].
+ *
+ * Each element is one of:
+ *   string                      → plain text
+ *   { code: string }            → <code>
+ *   { em: string }              → <em>
+ *   { strong: string }          → <strong>
+ *   { a: string, href: string } → <a> (external links get rel="noopener")
+ *
+ * Usage:
+ *   import RichText from 'notion2astro/components/RichText.astro';
+ *   <p><RichText runs={block.runs} /></p>
+ */
+const { runs = [] } = Astro.props;
+---
+{runs.map((r) =>
+  typeof r === 'string' ? (
+    r
+  ) : r.code !== undefined ? (
+    <code>{r.code}</code>
+  ) : r.em !== undefined ? (
+    <em>{r.em}</em>
+  ) : r.strong !== undefined ? (
+    <strong>{r.strong}</strong>
+  ) : r.a !== undefined ? (
+    <a href={r.href} rel={r.href?.startsWith('http') ? 'noopener noreferrer' : undefined}>
+      {r.a}
+    </a>
+  ) : (
+    (r as any).text || ''
+  )
+)}

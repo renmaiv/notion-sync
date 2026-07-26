@@ -1,0 +1,78 @@
+---
+/**
+ * ArticleCard.astro
+ *
+ * A blog-index card that renders one article from your articles JSON.
+ * - Articles with status "wip" render without a link (card only).
+ * - All other statuses wrap in an <a> to /[basePath]/[slug]/.
+ *
+ * Props:
+ *   article   - a single article object from the articles JSON
+ *   basePath  - URL prefix for article links, e.g. "/blog" (default "/blog")
+ *
+ * Card data model (article.card):
+ *   { media: string, width: string, ar: string }
+ *   width — CSS width value for the card column, e.g. "312px"
+ *   ar    — CSS aspect-ratio shorthand, e.g. "312/236"
+ *
+ * Usage:
+ *   import ArticleCard from 'notion2astro/components/ArticleCard.astro';
+ *   {articles.map((a) => <ArticleCard article={a} basePath="/blog" />)}
+ */
+import { statusMeta, isVideo } from '../lib/helpers.mjs';
+
+interface Props {
+  article: any;
+  basePath?: string;
+}
+
+const { article, basePath = '/blog' } = Astro.props;
+const hasPage = String(article.status).toLowerCase() !== 'wip';
+const { card } = article;
+const meta = statusMeta(article.status, article.datePublished);
+---
+<article class="n2a-card" style={`--n2a-card-width:${card.width}`}>
+  {hasPage ? (
+    <a href={`${basePath}/${article.slug}/`} class="n2a-card-link">
+      <div class="n2a-card-media" style={`--n2a-card-ar:${card.ar}`}>
+        {isVideo(card.media) ? (
+          <div class="n2a-video-placeholder" data-src={card.media} data-fit="cover"></div>
+        ) : (
+          <img src={card.media} alt={article.title} loading="lazy" />
+        )}
+      </div>
+      <div class="n2a-card-text">
+        <p class="n2a-card-title">{article.title}</p>
+        {article.subtitle && <p class="n2a-card-subtitle">{article.subtitle}</p>}
+        {meta.mode === 'date' && <p class="n2a-card-date">{meta.date}</p>}
+        {meta.mode === 'meta' && (
+          <div class="n2a-card-badge">
+            <img src={meta.icon} alt="" />
+            <span>{meta.text}</span>
+          </div>
+        )}
+      </div>
+    </a>
+  ) : (
+    <>
+      <div class="n2a-card-media" style={`--n2a-card-ar:${card.ar}`}>
+        {isVideo(card.media) ? (
+          <div class="n2a-video-placeholder" data-src={card.media} data-fit="cover"></div>
+        ) : (
+          <img src={card.media} alt={article.title} loading="lazy" />
+        )}
+      </div>
+      <div class="n2a-card-text">
+        <p class="n2a-card-title">{article.title}</p>
+        {article.subtitle && <p class="n2a-card-subtitle">{article.subtitle}</p>}
+        {meta.mode === 'date' && <p class="n2a-card-date">{meta.date}</p>}
+        {meta.mode === 'meta' && (
+          <div class="n2a-card-badge">
+            <img src={meta.icon} alt="" />
+            <span>{meta.text}</span>
+          </div>
+        )}
+      </div>
+    </>
+  )}
+</article>

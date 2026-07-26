@@ -1,0 +1,369 @@
+/**
+ * notion2astro.css
+ *
+ * Base styles for all notion2astro components.
+ * Every class is prefixed with `n2a-` to avoid collisions with your own CSS.
+ *
+ * Custom properties you can override in your own stylesheet:
+ *
+ *   --n2a-font-size-base   body text size           (default: 1rem)
+ *   --n2a-font-size-sm     small/meta text size      (default: 0.85rem)
+ *   --n2a-color-text       main text color           (default: inherit)
+ *   --n2a-color-muted      muted / meta text         (default: #888)
+ *   --n2a-color-link       link color                (default: inherit)
+ *   --n2a-color-quote-bar  blockquote left border    (default: currentColor)
+ *   --n2a-color-toc-active active TOC item color     (default: currentColor)
+ *   --n2a-card-gap         gap between index cards   (default: 1.5rem)
+ *   --n2a-digest-gap       gap between digest items  (default: 2rem)
+ *   --n2a-toc-width        TOC column width          (default: 200px)
+ *   --n2a-article-gap      gap between TOC & body    (default: 4rem)
+ *
+ * Import this file once in your layout:
+ *   import 'src/notion2astro/styles/notion2astro.css';
+ */
+
+/* ---- Article header ---- */
+
+.n2a-article-header {
+  margin-bottom: 2rem;
+}
+
+.n2a-article-title {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+}
+
+.n2a-article-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+}
+
+.n2a-meta-dot {
+  user-select: none;
+}
+
+/* ---- Article cards (index) ---- */
+
+.n2a-card {
+  width: var(--n2a-card-width, 100%);
+  max-width: 100%;
+}
+
+.n2a-card-link {
+  display: block;
+  text-decoration: none;
+  color: var(--n2a-color-link, inherit);
+}
+
+.n2a-card-media {
+  aspect-ratio: var(--n2a-card-ar, 4/3);
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.n2a-card-media img,
+.n2a-card-media .n2a-video-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.n2a-card-text {
+  padding: 0.75rem 0 0;
+}
+
+.n2a-card-title {
+  margin: 0 0 0.25rem;
+  font-size: var(--n2a-font-size-base, 1rem);
+  font-weight: 600;
+}
+
+.n2a-card-subtitle {
+  margin: 0 0 0.25rem;
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+}
+
+.n2a-card-date {
+  margin: 0;
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+}
+
+.n2a-card-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+}
+
+.n2a-card-badge img {
+  width: 1em;
+  height: 1em;
+}
+
+/* ---- Timeline article layout ---- */
+
+.n2a-timeline-row {
+  display: flex;
+  gap: var(--n2a-article-gap, 4rem);
+  align-items: flex-start;
+}
+
+.n2a-toc-col {
+  flex: 0 0 var(--n2a-toc-width, 200px);
+  position: sticky;
+  top: 2rem;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+}
+
+.n2a-article-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .n2a-timeline-row {
+    flex-direction: column;
+  }
+
+  .n2a-toc-col {
+    position: static;
+    max-height: none;
+    flex: none;
+    width: 100%;
+  }
+}
+
+/* ---- Table of contents ---- */
+
+.n2a-toc-list,
+.n2a-toc-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.n2a-toc-list ul {
+  padding-left: 1rem;
+}
+
+.n2a-toc-list li {
+  margin: 0.4rem 0;
+}
+
+.n2a-toc-list a {
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  text-decoration: none;
+  color: var(--n2a-color-muted, #888);
+  transition: color 0.15s;
+}
+
+.n2a-toc-list a:hover {
+  color: var(--n2a-color-text, inherit);
+}
+
+.n2a-toc-active > a {
+  color: var(--n2a-color-toc-active, currentColor);
+  font-weight: 600;
+}
+
+/* ---- Article body typography ---- */
+
+.n2a-article-summary {
+  font-size: 1.1em;
+  margin: 0 0 2rem;
+  line-height: 1.6;
+}
+
+.n2a-dropcap {
+  font-size: 3.5em;
+  line-height: 0.8;
+  float: left;
+  margin: 0.05em 0.08em 0 0;
+  font-weight: 700;
+}
+
+.n2a-article-body {
+  line-height: 1.7;
+}
+
+.n2a-article-body h2 {
+  font-size: 1.5rem;
+  margin: 2.5rem 0 0.75rem;
+}
+
+.n2a-article-body h3 {
+  font-size: 1.15rem;
+  margin: 2rem 0 0.5rem;
+}
+
+.n2a-article-body p {
+  margin: 0 0 1rem;
+}
+
+.n2a-article-body ul {
+  margin: 0 0 1rem 1.25rem;
+  padding: 0;
+}
+
+.n2a-article-body li {
+  margin: 0.35rem 0;
+}
+
+.n2a-article-body code {
+  font-size: 0.875em;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  background: rgba(127, 127, 127, 0.15);
+}
+
+/* ---- Blockquote ---- */
+
+.n2a-quote {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1.25rem;
+  border-left: 3px solid var(--n2a-color-quote-bar, currentColor);
+}
+
+.n2a-quote p {
+  margin: 0 0 0.5rem;
+  font-style: italic;
+}
+
+.n2a-quote cite {
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+  font-style: normal;
+}
+
+/* ---- Figure ---- */
+
+.n2a-figure {
+  margin: 1.5rem 0;
+}
+
+.n2a-figure-media {
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.n2a-figure-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.n2a-figure figcaption {
+  margin-top: 0.5rem;
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+  text-align: center;
+}
+
+/* ---- Digest article ---- */
+
+.n2a-digest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--n2a-digest-gap, 2rem);
+  margin: 2rem 0;
+}
+
+.n2a-digest-media {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.n2a-digest-media img,
+.n2a-digest-media .n2a-video-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.n2a-digest-text {
+  padding: 0.75rem 0 0;
+}
+
+.n2a-digest-item-title {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.n2a-digest-item-desc {
+  margin: 0;
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+  line-height: 1.55;
+}
+
+/* ---- Next article ---- */
+
+.n2a-next {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(127, 127, 127, 0.2);
+}
+
+.n2a-next-label {
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.n2a-next-card {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  text-decoration: none;
+  color: var(--n2a-color-link, inherit);
+}
+
+.n2a-next-media {
+  flex: 0 0 120px;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.n2a-next-media img,
+.n2a-next-media .n2a-video-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.n2a-next-text {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.n2a-next-title {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.n2a-next-subtitle {
+  margin: 0 0 0.25rem;
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+}
+
+.n2a-next-date {
+  margin: 0;
+  font-size: var(--n2a-font-size-sm, 0.85rem);
+  color: var(--n2a-color-muted, #888);
+}
