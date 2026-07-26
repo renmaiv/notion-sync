@@ -5,6 +5,8 @@ A library of Astro components and a Notion sync script for running a blog powere
 
 ## Ways to use
 
+You need to create and fill Notion "Articles" database and create a few mock articles before you start.
+
 1. You have an existing blog. Run AGENTS.md inside your site repo just once. Simply follow it and check results of each step. 
 2. No blog -- you can either run AGENTS.md or generate a local JSON file, and render them with drop-in Astro components -- please see below how..
 
@@ -21,6 +23,21 @@ Notion database ──► sync/notion-sync.js ──► src/data/articles.json
 ```
 
 The sync script is a one-time Node script you run locally (or in CI) whenever you publish new content. It writes a JSON file that Astro (but it's agnostic to any build) imports statically at build time — so the site itself makes zero Notion API calls.
+
+
+## How to create npm command
+
+In package.json, add an npm script named `sync:notion`, where `notion-sync.js` is name of script for example:
+
+``` json
+
+{
+  "scripts": {
+    "sync:notion": "git pull --rebase origin main && node scripts/notion-sync.js && git status && git commit -am \"Sync blog from Notion\" || echo \"No changes to commit\" && git push"
+  }
+}
+
+```
 
 ---
 
