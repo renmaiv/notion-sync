@@ -41,7 +41,7 @@ npm install @notionhq/client dotenv
 ### 3. Configure Notion
 
 1. Create a Notion integration (Personal Access Token, free) at <https://www.notion.so/my-integrations> and copy the secret (`ntn_...`).
-2. Copy the database ID from the URL: `notion.so/<workspace>/<DATABASE_ID>?v=...`
+2. Copy the database ID from the URL: `notion.so/<workspace>/<DATABASE_ID>?v=...` or just share the link to the page with LLM.
 
 Add to `.env`:
 
