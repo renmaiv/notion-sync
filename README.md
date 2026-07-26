@@ -1,6 +1,6 @@
 # notion-sync
 
-A library of Astro components and a Notion sync script for running a blog powered by Notion as a CMS. Pull your articles from Notion, generate a local JSON file, and render them with drop-in Astro components — no external build service, no API calls at runtime.
+A library of Astro components and a Notion sync script for running a blog powered by Notion as a CMS. Pull your articles from Notion, generate a local JSON file, and render them with drop-in Astro components — no external build service, no API calls at runtime, no MCP or tokens use.
 
 ## How it works
 
@@ -40,9 +40,8 @@ npm install @notionhq/client dotenv
 
 ### 3. Configure Notion
 
-1. Create a Notion integration at <https://www.notion.so/my-integrations> and copy the secret (`ntn_...`).
-2. Open your Articles database in Notion → `···` → Connections → add your integration.
-3. Copy the database ID from the URL: `notion.so/<workspace>/<DATABASE_ID>?v=...`
+1. Create a Notion integration (Personal Access Token, free) at <https://www.notion.so/my-integrations> and copy the secret (`ntn_...`).
+2. Copy the database ID from the URL: `notion.so/<workspace>/<DATABASE_ID>?v=...`
 
 Add to `.env`:
 
