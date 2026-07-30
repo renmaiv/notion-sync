@@ -171,8 +171,8 @@ Use Notion API (free tier) as the single source of truth for the blog's content,
 - Keep any **static** part of the section (e.g. a standing tagline/link that is part of the design) separate from the computed next-article card, and give each an honest, non-type-specific name.
 - Propose any minimal changes if needed, ensuring no visual change.
 
-#### 4. Extend Agent 3 script
-- In the Notion → data script, after generating each article:
+#### 4. Extend Agent 2 
+- In the Notion, after generating each article:
     - compute that article's "next" using the agreed logic,
     - add it to that article's data,
     - let the template render it.
@@ -180,7 +180,7 @@ Use Notion API (free tier) as the single source of truth for the blog's content,
 
 ---
 
-## Agent 3 — Blog index cards from Notion (separate script)
+## Agent 3 — Blog index cards from Notion
 
 **Goal:** Generate and update the article cards on the blog's index page from your Notion schema — including whatever sizing the design uses (width, aspect ratio) — without changing their current design.
 
@@ -205,8 +205,7 @@ Use Notion API (free tier) as the single source of truth for the blog's content,
 - Define a clearly delimited region the script **owns** (e.g. between comments or inside a wrapper) — or, with the data/presentation split, render the cards from the same data file.
 - Ensure every dynamic piece in those cards (title, subtitle, meta text, image, sizing) can be regenerated purely from Notion fields, and that you **include every record the cards need**, even if some don't get their own page (filter where each surface consumes the data, not at the source).
 
-#### 3. Script design (separate Node.js script)
-- Design a separate script that:
+#### 3. Add to sync script:
     - reads env-configured Notion API key and database ID (pinned API version),
     - fetches all pages where the "show on index" flag is true,
     - builds each card **in the blog's existing structure**: the card element with its sizing tokens, the media element with its aspect-ratio token, the image, the title, the subtitle, and a status-aware meta section (published date, or the blog's draft / ever-updating indicators),
