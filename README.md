@@ -2,6 +2,8 @@
 
 A library of Astro components and a Notion sync script for running a blog powered by Notion as a CMS. Pull your articles from Notion — no external build service, no API calls at runtime, no MCP or tokens use. You run single npm command every time you updated Notion or set up Github automation that runs on schedule.
 
+![Notion demo](articles.gif)
+
 
 ## Ways to use
 
